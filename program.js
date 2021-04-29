@@ -113,7 +113,7 @@ window.onload = function() {
                     for (var k = 0; k < 10; k++) {
                         for (var l = 0; l < 10; l++) {
                             if (dic_cost[s][l] != INF && used[l] == false && d[l] > d[s]+dic_cost[s][l]) {
-                                d[l] = d[s]+cost[s][l];
+                                d[l] = d[s]+dic_cost[s][l];
                             }
                         }
                         var dic_id = -1;
@@ -128,7 +128,6 @@ window.onload = function() {
                         used[dic_id] = true;
                         s = dic_id;
                     }
-
                     ctx.font = "40px serif";
                     ctx.fillText(d[id], point[id][0], point[id][1]);
                     cnt++;
