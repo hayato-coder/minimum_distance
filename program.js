@@ -25,7 +25,7 @@ window.onload = function() {
         for (var i = 0; i < 10; i++){
             while(1) {
                 var point_x = Math.random()*w;
-                var point_y = Math.random()*h;
+                var point_y = Math.random()*(h-100);
                 var flag = true;
                 for (var j = 0; j < point.length; j++) {
                     if (dist(point_x, point_y, point[j][0], point[j][1]) < r) {
@@ -73,6 +73,7 @@ window.onload = function() {
         }
         var cnt = 0;
         var selected_id;
+        var path = [];
         canvas.addEventListener("click", e => {
             const rect = canvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
@@ -86,6 +87,16 @@ window.onload = function() {
                     break;
                 }
             }
+            for (var i = 0; i < path.length-1; i++) {
+                // console.log(path[i], path[i+1]);
+                ctx.beginPath();
+                ctx.moveTo(point[path[i]][0]+50, point[path[i]][1]+35);
+                ctx.lineTo(point[path[i+1]][0]+50, point[path[i+1]][1]+35);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            ctx.clearRect(w/2-200, h-50, 500, 200);
             if (!flag) {
                 // alert("駅を選択してください");
                 // flag = true;
@@ -96,6 +107,7 @@ window.onload = function() {
                 if (cnt%2 == 0) {
                     selected_id = id;
                     cnt++;
+                    path = [];
                     console.log('a');
                 } else {
                     // ctx.beginPath();
@@ -107,6 +119,7 @@ window.onload = function() {
                     // console.log('b');
                     var used = new Array(10).fill(false);
                     var d  = new Array(10).fill(INF);
+                    var prev = new Array(10).fill(-1);
                     var s = selected_id;
                     d[s] = 0;
                     used[s] = true;
@@ -114,6 +127,7 @@ window.onload = function() {
                         for (var l = 0; l < 10; l++) {
                             if (dic_cost[s][l] != INF && used[l] == false && d[l] > d[s]+dic_cost[s][l]) {
                                 d[l] = d[s]+dic_cost[s][l];
+                                prev[l] = s;
                             }
                         }
                         var dic_id = -1;
@@ -128,8 +142,26 @@ window.onload = function() {
                         used[dic_id] = true;
                         s = dic_id;
                     }
+                    s = id;
+                    while(1) {
+                        // console.log(s);
+                        path.push(s);
+                        s = prev[s];
+                        if (s == -1) {
+                            break;
+                        }
+                    }
+                    for (var i = 0; i < path.length-1; i++) {
+                        // console.log(path[i], path[i+1]);
+                        ctx.beginPath();
+                        ctx.moveTo(point[path[i]][0]+50, point[path[i]][1]+35);
+                        ctx.lineTo(point[path[i+1]][0]+50, point[path[i+1]][1]+35);
+                        ctx.strokeStyle = "red";
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
                     ctx.font = "40px serif";
-                    ctx.fillText(d[id], point[id][0], point[id][1]);
+                    ctx.fillText("かかる時間は"+d[id]+"分です", w/2-200, h);
                     cnt++;
                 }
             }
